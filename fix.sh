@@ -61,17 +61,42 @@ function createShortcut {
     local tmpShortcut="/tmp/start-eid"
     local shortcut="/usr/local/bin/eid"
 
-    read -p "Do you want to create shortcut ${shortcut} for easier access [Y/n]? " choice
-    case "$choice" in
+    read -p "Do you want to create shortcut for above command as 'eid' in ${shortcut} for easier access [Y/n]? " choiceCli
+    case "$choiceCli" in
         y|Y)
-            echo "Creating shortcut"
             echo '#!/bin/bash
 
 env LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libcurl.so.3 EAC_MW_klient' > "${tmpShortcut}"
             sudo mv "${tmpShortcut}" "${shortcut}"
             sudo chmod a+rx "${shortcut}"
 
-            echo "Finished! ;-) The app will start by executing command eid"
+	    echo "Command line shortcut created"
+
+	    local desktopShortcut="~/.local/share/applications/eid.desktop"
+	    read -p "Do you want to create desktop icon launcher for super easier access [Y/n]? " choiceDesktop
+	    case "$choiceDesktop" in
+                y|Y)
+		    echo '[Desktop Entry]
+Encoding=UTF-8
+Version=3.0.0
+Name=eID klient (fixed)
+Comment=eID klient with changed env for curl3
+Exec=/usr/local/bin/eid
+Icon=/usr/lib/eac_mw_klient/img/sk_logo.png
+Terminal=false
+StartupWMClass=eid
+Type=Application
+Categories=Utility;' > "$HOME/.local/share/applications/eid.desktop"
+                    echo "Finished! ;-) You can start the app by executing command eid or just using your desktop launcher with typing eid"
+		;;
+                n|N)
+                    echo "Finished! ;-) The app will start by executing command eid"
+		;;
+                *)
+                echo "Invalid option. Exiting..."
+                ;;
+            esac
+
         ;;
         n|N) 
             echo "Exiting..."
